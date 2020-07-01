@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %>
+<body>
+    <%- include('./partials/header.ejs') %>
+    <div class="main">
+        <div class="relative bg-theme-dark">
+            <div class="abs trbl bg-cover opacity75" style="background-image:url(/images/background/bg1.jpg)"></div>
+            <div class="container mhi relative zindexfront">
+                <div class="row align-items-center mhi">
+                    <div class="col-12 text-white py-5">
+                        <h1 class="extrabold">LightHouse</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <%- include('./partials/compareform.ejs') %>
+            <% if(data.lighthouse){%>
+                <%- include('./partials/comparedResults.ejs') %>
+            <% }%>
+        </div>
+    </div>
+    <%- include('./partials/footer.ejs') %>
+</body>
+</html>

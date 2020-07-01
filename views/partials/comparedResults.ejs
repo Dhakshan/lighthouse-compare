@@ -1,0 +1,43 @@
+<div class="row justify-content-center py-4">
+    <div class="col-12">
+
+        <% if(data.lighthouse && data.lighthouse.urlResults){ %>
+            <% var keys = ["site","TTFB","TTI","FCP","FMP"] %>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-alternate">
+                    <thead>
+                        <tr>
+                            <% for(var k in keys){ %>
+                                <th>
+                                    <p class="text-uppercase"><%= keys[k]; %></p>
+                                </th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i in data.lighthouse.urlResults){ %>
+                            <tr>
+                                <% var iobj = data.lighthouse.urlResults[i]; %>
+                                <% for(var k in keys){ %>
+                                    <td>
+                                        <p><%= (iobj[keys[k]]||"-"); %></p>
+                                    </td>
+                                <% } %>
+                            </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if(data.lighthouse && data.lighthouse.comparedResults){ %>
+            <div>
+                <% data.lighthouse.comparedResults.forEach(results=>{ %>
+                    <div class="">
+                        <p class="alert-info p-3 rounded"><%= results; %></p>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</div>
