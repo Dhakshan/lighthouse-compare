@@ -12,12 +12,14 @@ const launchChromeAndRunLighthouse = function (url, flags = {}, config = null) {
 const lighthouseApp = async function (params) {
 
     const flags = {
-        chromeFlags: ['--headless']
+        chromeFlags: ['--headless'],
+        extraHeader : {}
     };
-    var urlPassed = 0, testResults = [], comparedResults = [];
-    var urlResults = [], keyObj1 = {}, keyObj2 = {}, valueObj1 = {}, valueObj2 = {},
+    var urlPassed = 0, testResults = [], comparedResults = [],urlResults = [],
         runURLTest = await function () {
-            let launch = launchChromeAndRunLighthouse(params.url[urlPassed], flags);
+            let newFlag = Object.assign({},flags,{extraHeader:params.lh[urlPassed].header||{}});
+            console.log(newFlag);
+            let launch = launchChromeAndRunLighthouse(params.lh[urlPassed].url, newFlag);
             launch.then(results => {
                 console.log("URL Success ::", results.requestedUrl);
                 var TTFB, TTI, FCP, FMP, outJson, rAudits = results.audits;
@@ -33,7 +35,7 @@ const lighthouseApp = async function (params) {
                 testResults.push(outJson);
                 runAllURLCompleted();
                 urlPassed++;
-                if (params.url[urlPassed]) {
+                if (params.lh[urlPassed]) {
                     runURLTest();
                 } else {
                     compareUrl();
