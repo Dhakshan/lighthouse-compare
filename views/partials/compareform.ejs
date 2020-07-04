@@ -1,35 +1,76 @@
+<script type="text/x-handlebars-template" class="nodisplay" id="formcomp_template" data-object="print:html|template:#formcomp_template|id:#lh_form">
+    <div>
+        {{#each lh}}
+        <div class="form-group">
+            <label class="form-label d-block sr-only" for="lh[{{@index}}][url]">Enter Url {{plusPlus @index 1}}</label>
+            <div class="input-group">
+                <input class="form-control" type="text" id="lh[{{@index}}][url]" name="lh[{{@index}}][url]" required value="{{url}}" placeholder="Enter Url {{plusPlus @index 1}}">
+                <div class="input-group-append" data-setting-nav="lh[{{@index}}][header]">
+                    <span class="input-group-text showclass"><i class="ion-gear-a off"></i><i class="ion-chevron-up on"></i></span>
+                </div>
+            </div>
+            <div class="input-params {{IfString headerOnAt @index 'on'}}" data-setting-content="lh[{{@index}}][header]">
+                <div class="inner">
+                    <div class="inner-wrapper">
+                        {{#each header}}
+                            <div class="row align-items-center mb-2">
+                                <div class="col-5">
+                                    <input class="form-control" type="text" id="lh[{{@../index}}][header][{{@index}}][key]" name="lh[{{@../index}}][header][{{@index}}][key]" value="{{key}}" placeholder="key">
+                                </div>
+                                <div class="col-5">
+                                    <input class="form-control" type="text" id="lh[{{@../index}}][header][{{@index}}][value]" name="lh[{{@../index}}][header][{{@index}}][value]" value="{{value}}" placeholder="value">
+                                </div>
+                                <div class="col-2">
+                                    <div class="row">
+                                        {{#isIndexNotZero @index}}
+                                            <div class="col-6">
+                                                <button type="button" class="btn btn-default delete_btn" data-object="urlAt:{{@../index}}|headerAt:{{@index}}|keynameofjson:formjson"><i class="ion-close"></i></button>
+                                            </div>
+                                        {{/isIndexNotZero}}
+                                        {{#isEachStart @index}}
+                                            <div class="col-6">
+                                                <button type="button" class="btn btn-default add_btn" data-object="urlAt:{{@../index}}|headerAt:{{@index}}|keynameofjson:formjson"><i class="ion-plus"></i></button>
+                                            </div>
+                                        {{/isEachStart}}
+                                    </div>
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{#isEachEnd ../lh @index}}
+        <div class="row align-items-center">
+            <div class="col-10">
+                <div class="progress-bar-control" style="display: none;">
+                    <div class="progress mb-4">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </div>
+        {{/isEachEnd}}
+        {{/each}}
+    </div>
+</script>
 <div class="row justify-content-center py-4">
     <div class="col-12 col-sm-8">
-        <% var formjson=(data.compare && data.compare.formjson)?data.compare.formjson:{firstUrl:"",secondUrl:""};%>
+        <% var newHeader={"key":"","value":""}; var formjson=(data.compare && data.compare.formjson)?data.compare.formjson:{};%>
+        <% formjson = Object.assign({lh:[{ url:"",header:[newHeader]},{url:"",header:[newHeader]}],newHeader:newHeader},formjson);%>
         <% if(data.compare && data.compare.msg!=""){ %>
         <div>
             <p class="alert-info p-3 rounded"><%= data.compare.msg %></p>
         </div>
         <% } %>
-        <form action="/compare" method="POST">
-            <div class="form-group">
-                <label class="form-label d-block" for="firstUrl">Enter Url</label>
-                <div class="input-group">
-                    <input class="form-control" type="text" id="firstUrl" name="firstUrl" required value="<%= formjson.firstUrl %>">
-                    <div class="input-group-append">
-                        <span class="input-group-text"><i class="ion-gear-a"></i></span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group row align-items-end">
-                <div class="col">
-                    <label class="form-label d-block" for="secondUrl">Enter Compare Url</label>
-                    <div class="input-group">
-                        <input class="form-control" type="text" id="secondUrl" name="secondUrl" required value="<%= formjson.secondUrl %>">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="ion-gear-a"></i></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <button type="submit" class="btn btn-success">Submit</button>
-                </div>
-            </div>
+        <script>
+            var formjson = <%- JSON.stringify(formjson) %>;
+        </script>
+        <form id="compareForm" action="/compare" method="POST">
+            <div id="lh_form" data-runfn="compile" data-object="id:#lh_form|template:#formcomp_template|keynameofjson:formjson"></div>
         </form>
     </div>
 </div>

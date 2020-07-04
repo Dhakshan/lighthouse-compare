@@ -29,19 +29,32 @@ app.get('/', (req, res) => {
         }
     });
 });
-
+const cloneObject = function(json){
+    return JSON.parse(JSON.stringify(json));
+}
+app.get('/compare', (req, res) => {
+    res.redirect("/");
+});
 app.post('/compare', (req, res) => {
     console.log(req.body);
-    let firstUrl = req.body.firstUrl, secondUrl = req.body.secondUrl;
-    let compare = {
+    var formjson = req.body.lh, compare = {
         msg: "",
-        formjson: req.body
+        formjson: cloneObject(req.body)
     };
-    if (firstUrl == "" && secondUrl == "") {
-        compare.msg = "Please enter 2 url to compare";
+    var headerSerialize = function(header){
+        var newHeader = {};
+        for(var i in header){
+            var iobj = header[i];
+            if(iobj && iobj.key && iobj.value){
+                newHeader[iobj.key] = iobj.value||"";
+            }
+        }
+        return newHeader;
     }
-    let results = lighthouseApp.init({
-        url: [firstUrl, secondUrl], maxRun: 2, complete: function (results) {
+    formjson[0].header = headerSerialize(formjson[0].header),formjson[1].header = headerSerialize(formjson[1].header);
+    
+    var results = lighthouseApp.init({
+        lh: [formjson[0], formjson[1]], maxRun: formjson.length, complete: function (results) {
             console.log(results);
             res.render('index', {
                 data: {
@@ -52,6 +65,7 @@ app.post('/compare', (req, res) => {
             });
         }
     });
+
 })
 
 //404 page

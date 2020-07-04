@@ -1,5 +1,6 @@
 const lighthouse = require('lighthouse');
 const chromeLauncher = require('chrome-launcher');
+const lhConfig = require('./lh-config');
 
 const launchChromeAndRunLighthouse = function (url, flags = {}, config = null) {
     return chromeLauncher.launch(flags).then(chrome => {
@@ -10,14 +11,15 @@ const launchChromeAndRunLighthouse = function (url, flags = {}, config = null) {
     });
 }
 const lighthouseApp = async function (params) {
-
     const flags = {
-        chromeFlags: ['--headless']
+        chromeFlags: ['--headless'],
     };
-    var urlPassed = 0, testResults = [], comparedResults = [];
-    var urlResults = [], keyObj1 = {}, keyObj2 = {}, valueObj1 = {}, valueObj2 = {},
+    var urlPassed = 0, testResults = [], comparedResults = [], urlResults = [],
+        deepclone = function(json){ return JSON.parse(JSON.stringify(json))},
         runURLTest = await function () {
-            let launch = launchChromeAndRunLighthouse(params.url[urlPassed], flags);
+            let newConfig = Object.assign({}, deepclone(lhConfig().desktop), { extraHeaders: params.lh[urlPassed].header || {} });
+            console.log(newConfig);
+            let launch = launchChromeAndRunLighthouse(params.lh[urlPassed].url, flags, newConfig);
             launch.then(results => {
                 console.log("URL Success ::", results.requestedUrl);
                 var TTFB, TTI, FCP, FMP, outJson, rAudits = results.audits;
@@ -33,7 +35,7 @@ const lighthouseApp = async function (params) {
                 testResults.push(outJson);
                 runAllURLCompleted();
                 urlPassed++;
-                if (params.url[urlPassed]) {
+                if (params.lh[urlPassed]) {
                     runURLTest();
                 } else {
                     compareUrl();
@@ -70,7 +72,7 @@ const lighthouseApp = async function (params) {
                             abs_val = (url1 - url2).toFixed(2);
                             degrad_percentage = ((abs_val / url2) * 100).toFixed(2);
                             var cResults = "Budget " + i + " = " + url1 + " breached by " + abs_val + " ms, from Median " + i + " = " + url2 + " and overall degradation = " + degrad_percentage + " %";
-                            if(i=="site"){
+                            if (i == "site") {
                                 var cResults = "Budget " + i + " = " + url1 + " , from Median " + i + " = " + url2;
                             }
                         } else {
